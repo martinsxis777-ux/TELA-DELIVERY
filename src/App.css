@@ -1,0 +1,16 @@
+.main-content {
+  flex: 1;
+  padding-bottom: 80px;
+  /* Space for the floating cart */
+  overflow-y: auto;
+}
+
+/* Header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--color-red);
+  color: white;
+  align-items: center;
+}
