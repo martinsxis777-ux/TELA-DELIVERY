@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import logoImg from '../assets/logo.png';
 
 export default function Header({ onViewChange, currentView }) {
     const { cartCount } = useCart();
@@ -20,7 +21,7 @@ export default function Header({ onViewChange, currentView }) {
                 <motion.img
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    src="/logo.png"
+                    src={logoImg}
                     alt="Açai Rino"
                     className="h-14 drop-shadow-md rounded-full object-cover bg-white p-0.5"
                     onError={(e) => {
