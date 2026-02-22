@@ -139,7 +139,7 @@ export default function IFoodPaymentScreen() {
                     onClick={handleMockPixPaid}
                     className="w-full bg-green-500 text-white font-bold py-3.5 rounded-md mt-4 active:bg-green-600 shadow-md"
                 >
-                    Já realizei o pagamento (Simular Confirmação)
+                    Já realizei o pagamento
                 </button>
 
                 <button onClick={() => navigate('/')} className="mt-6 font-bold text-[#FF2B62]">
