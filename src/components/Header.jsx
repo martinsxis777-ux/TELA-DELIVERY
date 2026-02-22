@@ -16,14 +16,14 @@ export default function Header({ onViewChange, currentView }) {
                 )}
             </div>
 
-            <div className="flex-1 flex justify-center py-2">
-                <motion.img
+            <div className="flex-1 flex justify-center py-3">
+                <motion.h1
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    src="/assets/logo.png"
-                    alt="Hamburgueria do Pai Logo"
-                    className="h-16 w-auto object-contain drop-shadow-md rounded-full bg-white p-1"
-                />
+                    className="font-black text-2xl tracking-tighter text-white drop-shadow-md italic"
+                >
+                    Açai Rino
+                </motion.h1>
             </div>
 
             <div className="flex-1 flex justify-end">

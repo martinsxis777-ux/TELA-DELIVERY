@@ -12,7 +12,7 @@ import QRCode from 'react-qr-code';
 export default function IFoodPaymentScreen() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { cartItems, cartTotal, clearCart } = useCart();
+    const { cartItems, cartTotal, clearCart, discountAmount } = useCart();
     const deliveryData = location.state || { method: 'pickup', address: null };
 
     const [paymentMethod, setPaymentMethod] = useState('pix');
@@ -35,8 +35,8 @@ export default function IFoodPaymentScreen() {
         setCcData(p => ({ ...p, cpf: v.substring(0, 14) }));
     };
 
-    const deliveryFee = deliveryData.method === 'delivery' && cartTotal < 25 ? 5.00 : 0;
-    const total = cartTotal + deliveryFee;
+    const deliveryFee = deliveryData.method === 'delivery' ? 6.00 : 0;
+    const total = cartTotal - discountAmount + deliveryFee;
 
     const handleFinishPayment = async () => {
         setIsProcessing(true);
@@ -48,6 +48,7 @@ export default function IFoodPaymentScreen() {
             const orderRef = await addDoc(collection(db, "orders"), {
                 items: cartItems.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
                 subtotal: cartTotal,
+                discount: discountAmount,
                 deliveryFee,
                 total,
                 deliveryData: safeDeliveryData,
@@ -130,7 +131,7 @@ export default function IFoodPaymentScreen() {
 
                 <button
                     onClick={() => navigator.clipboard.writeText(pixData.qrcode)}
-                    className="w-full bg-[#FF2B62] text-white font-bold py-3.5 rounded-md active:bg-ifood-dark"
+                    className="w-full bg-[#6B21A8] text-white font-bold py-3.5 rounded-md active:bg-purple-800"
                 >
                     Copiar código PIX
                 </button>
@@ -142,7 +143,7 @@ export default function IFoodPaymentScreen() {
                     Já realizei o pagamento
                 </button>
 
-                <button onClick={() => navigate('/')} className="mt-6 font-bold text-[#FF2B62]">
+                <button onClick={() => navigate('/')} className="mt-6 font-bold text-[#6B21A8]">
                     Voltar ao Cardápio
                 </button>
             </div>
@@ -157,7 +158,7 @@ export default function IFoodPaymentScreen() {
                 </div>
                 <h2 className="font-bold text-2xl mb-2">Pedido Recebido!</h2>
                 <p className="text-gray-500 mb-8">A cozinha já está preparando o seu pedido.</p>
-                <button onClick={() => navigate('/')} className="w-full bg-[#FF2B62] text-white font-bold py-3.5 rounded-md">
+                <button onClick={() => navigate('/')} className="w-full bg-[#6B21A8] text-white font-bold py-3.5 rounded-md">
                     Voltar ao Início
                 </button>
             </div>
@@ -177,7 +178,7 @@ export default function IFoodPaymentScreen() {
             className="flex flex-col min-h-screen bg-gray-50 pb-32 font-sans"
         >
             <header className="sticky top-0 z-50 bg-white shadow-sm flex items-center justify-between p-4 mb-2">
-                <button onClick={() => navigate(-1)} className="p-1 text-red-500 rounded-full active:bg-gray-100">
+                <button onClick={() => navigate(-1)} className="p-1 text-purple-600 rounded-full active:bg-gray-100">
                     <ArrowLeft size={24} />
                 </button>
                 <h1 className="font-bold text-gray-800 text-lg flex-1 text-center">Forma de pagamento</h1>
@@ -188,8 +189,8 @@ export default function IFoodPaymentScreen() {
                 <h3 className="font-bold text-gray-800">Escolha a forma de pagamento</h3>
 
                 {/* PIX Option */}
-                <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'pix' ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
-                    <input type="radio" name="payment" value="pix" checked={paymentMethod === 'pix'} onChange={() => setPaymentMethod('pix')} className="accent-red-500 w-5 h-5" />
+                <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'pix' ? 'border-purple-600 bg-purple-50' : 'border-gray-200'}`}>
+                    <input type="radio" name="payment" value="pix" checked={paymentMethod === 'pix'} onChange={() => setPaymentMethod('pix')} className="accent-purple-600 w-5 h-5" />
                     <div className="flex-1">
                         <h4 className="font-bold text-gray-800">Pix</h4>
                         <p className="text-xs text-green-600 font-medium">Aprovação imediata</p>
@@ -197,8 +198,8 @@ export default function IFoodPaymentScreen() {
                 </label>
 
                 {/* Credit Card Option */}
-                <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'credit_card' ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
-                    <input type="radio" name="payment" value="credit_card" checked={paymentMethod === 'credit_card'} onChange={() => setPaymentMethod('credit_card')} className="accent-red-500 w-5 h-5" />
+                <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'credit_card' ? 'border-purple-600 bg-purple-50' : 'border-gray-200'}`}>
+                    <input type="radio" name="payment" value="credit_card" checked={paymentMethod === 'credit_card'} onChange={() => setPaymentMethod('credit_card')} className="accent-purple-600 w-5 h-5" />
                     <div className="flex-1 flex items-center gap-2">
                         <CreditCard size={20} className="text-gray-600" />
                         <h4 className="font-bold text-gray-800">Cartão de Crédito</h4>
@@ -211,45 +212,72 @@ export default function IFoodPaymentScreen() {
                         <input
                             type="text" placeholder="Número do cartão" maxLength={19}
                             value={ccData.number} onChange={e => handleCcNumber(e.target.value)}
-                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-red-500 focus:bg-white"
+                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-purple-600 focus:bg-white"
                         />
                         <div className="flex gap-2 w-full">
                             <input
                                 type="text" placeholder="Validade (MM/AA)" maxLength={5}
                                 value={ccData.expiry} onChange={e => handleCcExpiry(e.target.value)}
-                                className="p-4 border rounded-lg flex-1 bg-gray-50 outline-none focus:border-red-500 focus:bg-white"
+                                className="p-4 border rounded-lg flex-1 bg-gray-50 outline-none focus:border-purple-600 focus:bg-white"
                             />
                             <input
                                 type="text" placeholder="CVV" maxLength={3}
                                 value={ccData.cvv} onChange={e => handleCcCvv(e.target.value)}
-                                className="p-4 border rounded-lg w-24 bg-gray-50 outline-none focus:border-red-500 focus:bg-white"
+                                className="p-4 border rounded-lg w-24 bg-gray-50 outline-none focus:border-purple-600 focus:bg-white"
                             />
                         </div>
                         <input
                             type="text" placeholder="Nome impresso no cartão" uppercase
                             value={ccData.name} onChange={e => setCcData({ ...ccData, name: e.target.value.toUpperCase() })}
-                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-red-500 focus:bg-white uppercase"
+                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-purple-600 focus:bg-white uppercase"
                         />
                         <input
                             type="text" placeholder="CPF do titular" maxLength={14}
                             value={ccData.cpf} onChange={e => handleCpf(e.target.value)}
-                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-red-500 focus:bg-white"
+                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-purple-600 focus:bg-white"
                         />
                     </div>
                 )}
             </div>
 
+            <div className="bg-white p-4 mt-2 mb-32 border-y">
+                <h3 className="font-bold text-gray-800 text-sm mb-3">Detalhes das taxas</h3>
+                <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center text-sm text-gray-600">
+                        <span>Subtotal</span>
+                        <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cartTotal)}</span>
+                    </div>
+                    {discountAmount > 0 && (
+                        <div className="flex justify-between items-center text-sm font-medium text-green-600">
+                            <span>Cupons de desconto</span>
+                            <span>-{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(discountAmount)}</span>
+                        </div>
+                    )}
+                    {deliveryData.method === 'delivery' && (
+                        <div className="flex justify-between items-center text-sm text-gray-600">
+                            <span>Taxa de entrega</span>
+                            <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(deliveryFee)}</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             <div className="fixed bottom-0 w-full max-w-md bg-white border-t p-4 z-50">
                 <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-600 font-medium text-sm">Total do pedido</span>
-                    <span className="text-gray-900 font-bold text-lg">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}
-                    </span>
+                    <span className="text-gray-900 font-bold text-lg">Total</span>
+                    <div className="text-right">
+                        <span className="text-gray-900 font-black text-xl block">
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total > 0 ? total : 0)}
+                        </span>
+                        {discountAmount > 0 && (
+                            <span className="text-green-600 text-xs font-medium">Economizou {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(discountAmount)}</span>
+                        )}
+                    </div>
                 </div>
                 <button
                     onClick={handleFinishPayment}
-                    disabled={!isCcValid || isProcessing}
-                    className="w-full bg-[#FF2B62] text-white font-bold py-3.5 rounded-md disabled:bg-gray-300 disabled:text-gray-500 active:bg-ifood-dark transition-colors flex justify-center items-center"
+                    disabled={!isCcValid || isProcessing || total < 0}
+                    className="w-full bg-[#6B21A8] text-white font-bold py-3.5 rounded-md disabled:bg-gray-300 disabled:text-gray-500 active:bg-purple-800 transition-colors flex justify-center items-center"
                 >
                     {isProcessing ? 'Processando...' : 'Finalizar pagamento'}
                 </button>

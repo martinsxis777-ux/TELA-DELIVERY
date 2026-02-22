@@ -6,6 +6,7 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
 
     const addToCart = (product) => {
         setCartItems(prev => {
@@ -38,6 +39,36 @@ export function CartProvider({ children }) {
     const cartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+    const applyCoupon = (code) => {
+        const c = code.toUpperCase();
+        if (c === 'PRIMEIRA50') {
+            setAppliedCoupon({ code: c, type: 'percent', value: 50 });
+            toast.success("Cupom de 50% aplicado!", { duration: 2000 });
+            return true;
+        } else if (c === 'RINO10' || c === 'RINO20' || c === 'RINO30') {
+            const val = parseInt(c.replace('RINO', ''));
+            setAppliedCoupon({ code: c, type: 'fixed', value: val });
+            toast.success(`Cupom de R$ ${val} aplicado!`, { duration: 2000 });
+            return true;
+        }
+        toast.error("Cupom inválido ou expirado", { duration: 2000 });
+        return false;
+    };
+
+    const removeCoupon = () => {
+        setAppliedCoupon(null);
+        toast.info("Cupom removido", { duration: 2000 });
+    };
+
+    let discountAmount = 0;
+    if (appliedCoupon) {
+        if (appliedCoupon.type === 'percent') {
+            discountAmount = cartTotal * (appliedCoupon.value / 100);
+        } else if (appliedCoupon.type === 'fixed') {
+            discountAmount = Math.min(cartTotal, appliedCoupon.value);
+        }
+    }
+
     const clearCart = () => setCartItems([]);
 
     return (
@@ -50,7 +81,11 @@ export function CartProvider({ children }) {
             cartCount,
             isCartOpen,
             setIsCartOpen,
-            clearCart
+            clearCart,
+            appliedCoupon,
+            applyCoupon,
+            removeCoupon,
+            discountAmount
         }}>
             {children}
         </CartContext.Provider>

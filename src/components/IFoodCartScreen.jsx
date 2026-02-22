@@ -1,15 +1,54 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ArrowLeft, Trash2, Plus, Minus } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft, Trash2, Plus, Minus, Tag, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 export default function IFoodCartScreen() {
     const navigate = useNavigate();
-    const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
+    const {
+        cartItems, updateQuantity, removeFromCart, cartTotal, cartCount,
+        appliedCoupon, applyCoupon, removeCoupon, discountAmount
+    } = useCart();
+
+    const [couponCode, setCouponCode] = useState('');
+    const [showRegister, setShowRegister] = useState(false);
+    const [guestName, setGuestName] = useState('');
+    const [guestPhone, setGuestPhone] = useState('');
+
+    useEffect(() => {
+        // Preenche info se ja tentou e recarregou a pagina
+        const saved = localStorage.getItem('@acaiRino:user');
+        if (saved) {
+            const data = JSON.parse(saved);
+            setGuestName(data.name || '');
+            setGuestPhone(data.phone || '');
+        }
+    }, []);
+
+    const handleApply = () => {
+        if (couponCode.trim()) {
+            applyCoupon(couponCode);
+            setCouponCode('');
+        }
+    };
 
     const handleFinish = () => {
         if (cartCount > 0) {
-            navigate('/delivery');
+            const hasUser = localStorage.getItem('@acaiRino:user');
+            if (hasUser) {
+                navigate('/delivery', { state: { finalTotal: cartTotal - discountAmount } });
+            } else {
+                setShowRegister(true);
+            }
+        }
+    };
+
+    const handleSaveGuest = () => {
+        if (guestName.length > 2 && guestPhone.length >= 10) {
+            localStorage.setItem('@acaiRino:user', JSON.stringify({ name: guestName, phone: guestPhone }));
+            setShowRegister(false);
+            navigate('/delivery', { state: { finalTotal: cartTotal - discountAmount } });
         }
     };
 
@@ -23,13 +62,13 @@ export default function IFoodCartScreen() {
         >
             {/* Header Fixo */}
             <header className="sticky top-0 z-50 bg-white shadow-sm flex items-center justify-between p-4 mb-2">
-                <button onClick={() => navigate(-1)} className="p-1 text-red-500 rounded-full active:bg-gray-100 transition-colors">
+                <button onClick={() => navigate(-1)} className="p-1 text-purple-600 rounded-full active:bg-gray-100 transition-colors">
                     <ArrowLeft size={24} />
                 </button>
                 <div className="flex-1 flex justify-center items-center gap-2">
                     <h1 className="font-bold text-gray-800 text-lg">Carrinho</h1>
                     {cartCount > 0 && (
-                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        <span className="bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                             {cartCount}
                         </span>
                     )}
@@ -60,14 +99,14 @@ export default function IFoodCartScreen() {
                                     <div className="flex items-center gap-4 mt-2 self-start">
                                         <div className="flex items-center bg-gray-50 rounded-lg p-1 border">
                                             {item.quantity === 1 ? (
-                                                <motion.button whileTap={{ scale: 0.8 }} onClick={() => removeFromCart(item.id)} className="w-8 h-8 flex items-center justify-center text-red-500"><Trash2 size={16} /></motion.button>
+                                                <motion.button whileTap={{ scale: 0.8 }} onClick={() => removeFromCart(item.id)} className="w-8 h-8 flex items-center justify-center text-purple-600"><Trash2 size={16} /></motion.button>
                                             ) : (
-                                                <motion.button whileTap={{ scale: 0.8 }} onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-red-500"><Minus size={16} /></motion.button>
+                                                <motion.button whileTap={{ scale: 0.8 }} onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-purple-600"><Minus size={16} /></motion.button>
                                             )}
 
                                             <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
 
-                                            <motion.button whileTap={{ scale: 0.8 }} onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-red-500"><Plus size={16} /></motion.button>
+                                            <motion.button whileTap={{ scale: 0.8 }} onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-purple-600"><Plus size={16} /></motion.button>
                                         </div>
                                     </div>
 
@@ -85,23 +124,136 @@ export default function IFoodCartScreen() {
                 </div>
             )}
 
-            {/* Rodapé Fixo (Tamanho iFood) */}
-            <div className="fixed bottom-0 w-full max-w-md bg-white border-t p-4 z-50">
-                <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-600 font-medium text-sm">Total</span>
-                    <span className="text-gray-900 font-bold text-lg">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cartTotal)}
-                    </span>
+            {/* Seção Cupons (Estilo 99 Food/iFood) */}
+            {cartCount > 0 && (
+                <div className="bg-white p-4 mb-2">
+                    <h3 className="font-bold text-gray-800 text-sm mb-3">Cupons e descontos</h3>
+                    {!appliedCoupon ? (
+                        <div className="flex gap-2">
+                            <div className="relative flex-1">
+                                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Insira o código promocional"
+                                    value={couponCode}
+                                    onChange={(e) => setCouponCode(e.target.value)}
+                                    className="w-full bg-gray-50 border rounded-lg py-2.5 pl-10 pr-3 text-sm focus:border-purple-600 outline-none uppercase"
+                                />
+                            </div>
+                            <button
+                                onClick={handleApply}
+                                className="bg-purple-100 text-purple-700 font-bold px-4 rounded-lg text-sm"
+                            >
+                                Resgatar
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
+                            <div className="flex items-center gap-2">
+                                <CheckCircle2 className="text-green-600" size={20} />
+                                <div>
+                                    <p className="font-bold text-green-700 text-sm">{appliedCoupon.code}</p>
+                                    <p className="text-green-600 text-xs text-left">Desconto aplicado</p>
+                                </div>
+                            </div>
+                            <button onClick={removeCoupon} className="text-gray-400 text-sm underline active:text-gray-500">
+                                Remover
+                            </button>
+                        </div>
+                    )}
                 </div>
-                <motion.button
-                    whileTap={{ scale: 0.96 }}
-                    onClick={handleFinish}
-                    disabled={cartCount === 0}
-                    className="w-full bg-[#FF2B62] text-white font-bold py-3.5 rounded-md disabled:opacity-50 active:bg-ifood-dark transition-colors"
-                >
-                    FINALIZAR PEDIDO
-                </motion.button>
+            )}
+
+            {/* Rodapé Fixo (Tamanho 99 Food) */}
+            <div className="fixed bottom-0 left-0 w-full bg-white border-t z-40 pb-4">
+                <div className="p-4 flex flex-col gap-1">
+                    <div className="flex justify-between items-center text-sm text-gray-500">
+                        <span>Subtotal</span>
+                        <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cartTotal)}</span>
+                    </div>
+
+                    {discountAmount > 0 && (
+                        <div className="flex justify-between items-center text-sm font-medium text-green-600">
+                            <span>Cupons de desconto</span>
+                            <span className="flex items-center gap-1">
+                                <CheckCircle2 size={14} />
+                                -{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(discountAmount)}
+                            </span>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-center mt-2 border-t pt-2">
+                        <span className="text-gray-900 font-bold text-lg">Total</span>
+                        <div className="text-right">
+                            <span className="text-gray-900 font-black text-xl block">
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cartTotal - discountAmount)}
+                            </span>
+                            {discountAmount > 0 && (
+                                <span className="text-green-600 text-xs font-medium">Economizou {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(discountAmount)}</span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="px-4">
+                    <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        onClick={handleFinish}
+                        disabled={cartCount === 0}
+                        className="w-full bg-[#6B21A8] text-white font-bold py-3.5 rounded-lg disabled:opacity-50 active:bg-purple-800 transition-colors"
+                    >
+                        CONTINUAR
+                    </motion.button>
+                </div>
             </div>
+
+            {/* Modal de Registro (Gateway Fast Guest) */}
+            <AnimatePresence>
+                {showRegister && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 z-[100] flex justify-center items-end"
+                    >
+                        <motion.div
+                            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            className="bg-white w-full max-w-md rounded-t-3xl p-6 flex flex-col"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
+                            <h2 className="text-2xl font-black text-purple-900 mb-2">Quem é você?</h2>
+                            <p className="text-gray-500 text-sm mb-6">Para agilizar seu pedido e não precisarmos criar senha, só preencha os dados abaixo e pronto!</p>
+
+                            <div className="flex flex-col gap-4 mb-8">
+                                <input
+                                    type="text" placeholder="Qual o seu nome?"
+                                    value={guestName} onChange={e => setGuestName(e.target.value)}
+                                    className="p-4 border rounded-xl bg-gray-50 focus:bg-white focus:border-purple-600 outline-none w-full"
+                                />
+                                <input
+                                    type="text" placeholder="WhatsApp (com DDD)" maxLength={15}
+                                    value={guestPhone} onChange={e => setGuestPhone(e.target.value)}
+                                    className="p-4 border rounded-xl bg-gray-50 focus:bg-white focus:border-purple-600 outline-none w-full"
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleSaveGuest}
+                                disabled={guestName.length < 3 || guestPhone.length < 10}
+                                className="w-full bg-[#6B21A8] text-white font-bold py-4 rounded-xl disabled:bg-gray-300 active:bg-purple-800"
+                            >
+                                Confirmar e Ir para Entrega
+                            </button>
+                            <button
+                                onClick={() => setShowRegister(false)}
+                                className="w-full bg-white text-gray-500 font-bold py-3 mt-2 rounded-xl active:bg-gray-50"
+                            >
+                                Cancelar
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
         </motion.div>
     );

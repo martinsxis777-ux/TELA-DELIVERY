@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function IFoodDeliveryScreen() {
     const navigate = useNavigate();
@@ -35,6 +36,7 @@ export default function IFoodDeliveryScreen() {
                         bairro: data.bairro,
                         localidade: data.localidade
                     }));
+                    toast.success("Estamos a 4,3 KM de você !! Entrega Rápida", { duration: 4000 });
                 }
             } catch (err) {
                 console.error('ViaCEP error:', err);
@@ -59,7 +61,7 @@ export default function IFoodDeliveryScreen() {
             className="flex flex-col min-h-screen bg-gray-50 pb-24 font-sans"
         >
             <header className="sticky top-0 z-50 bg-white shadow-sm flex items-center justify-between p-4 mb-2">
-                <button onClick={() => navigate(-1)} className="p-1 text-red-500 rounded-full active:bg-gray-100 transition-colors">
+                <button onClick={() => navigate(-1)} className="p-1 text-purple-600 rounded-full active:bg-gray-100 transition-colors">
                     <ArrowLeft size={24} />
                 </button>
                 <h1 className="font-bold text-gray-800 text-lg flex-1 text-center">Como deseja receber?</h1>
@@ -71,7 +73,7 @@ export default function IFoodDeliveryScreen() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <button
                         onClick={() => setMethod('delivery')}
-                        className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${method === 'delivery' ? 'border-red-500 bg-red-50 text-red-500 shadow-sm' : 'border-gray-200 text-gray-500'}`}
+                        className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${method === 'delivery' ? 'border-purple-600 bg-purple-50 text-purple-600 shadow-sm' : 'border-gray-200 text-gray-500'}`}
                     >
                         <MapPin size={32} />
                         <span className="font-medium text-sm">Entregar em casa</span>
@@ -79,7 +81,7 @@ export default function IFoodDeliveryScreen() {
 
                     <button
                         onClick={() => setMethod('pickup')}
-                        className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${method === 'pickup' ? 'border-red-500 bg-red-50 text-red-500 shadow-sm' : 'border-gray-200 text-gray-500'}`}
+                        className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${method === 'pickup' ? 'border-purple-600 bg-purple-50 text-purple-600 shadow-sm' : 'border-gray-200 text-gray-500'}`}
                     >
                         <Store size={32} />
                         <span className="font-medium text-sm">Retirar no balcão</span>
@@ -97,7 +99,7 @@ export default function IFoodDeliveryScreen() {
                             maxLength={9}
                             value={cep}
                             onChange={handleCepChange}
-                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-red-500 focus:bg-white transition-colors"
+                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-purple-600 focus:bg-white transition-colors"
                         />
 
                         <div className="flex gap-2 w-full">
@@ -113,7 +115,7 @@ export default function IFoodDeliveryScreen() {
                                 placeholder="Nº"
                                 value={address.numero}
                                 onChange={(e) => setAddress({ ...address, numero: e.target.value.replace(/\D/g, '') })}
-                                className="p-4 border rounded-lg w-24 bg-gray-50 outline-none focus:border-red-500 focus:bg-white transition-colors"
+                                className="p-4 border rounded-lg w-24 bg-gray-50 outline-none focus:border-purple-600 focus:bg-white transition-colors"
                             />
                         </div>
 
@@ -122,7 +124,7 @@ export default function IFoodDeliveryScreen() {
                             placeholder="Complemento (Apto, Bloco, etc)"
                             value={address.complemento}
                             onChange={(e) => setAddress({ ...address, complemento: e.target.value })}
-                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-red-500 focus:bg-white transition-colors"
+                            className="p-4 border rounded-lg w-full bg-gray-50 outline-none focus:border-purple-600 focus:bg-white transition-colors"
                         />
 
                         <div className="flex gap-2 w-full">
@@ -156,7 +158,7 @@ export default function IFoodDeliveryScreen() {
                 <button
                     onClick={handleContinue}
                     disabled={!isFormValid}
-                    className="w-full bg-[#FF2B62] text-white font-bold py-3.5 rounded-md disabled:bg-gray-300 disabled:text-gray-500 active:bg-ifood-dark transition-colors"
+                    className="w-full bg-[#6B21A8] text-white font-bold py-3.5 rounded-md disabled:bg-gray-300 disabled:text-gray-500 active:bg-purple-800 transition-colors"
                 >
                     Continuar
                 </button>

@@ -22,7 +22,7 @@ export default function ProductCard({ product }) {
                         onClick={() => addToCart(product)}
                         aria-label="Adicionar"
                     >
-                        <Plus size={18} className="text-[#FF2B62]" />
+                        <Plus size={18} className="text-[#6B21A8]" />
                     </motion.button>
                 </div>
             </div>
