@@ -18,7 +18,14 @@ export async function authenticateVeopag() {
     });
 
     if (!response.ok) {
-        throw new Error('Falha na autenticação Veopag');
+        let errDesc = '';
+        try {
+            const errObj = await response.json();
+            errDesc = JSON.stringify(errObj);
+        } catch (e) {
+            errDesc = response.statusText;
+        }
+        throw new Error(`Veopag (${response.status}): ${errDesc}. ID_Len: ${clientId?.length} Sec_Len: ${clientSecret?.length}`);
     }
 
     const data = await response.json();
