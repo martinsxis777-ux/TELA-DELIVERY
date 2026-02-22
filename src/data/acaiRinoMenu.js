@@ -82,7 +82,11 @@ const baseCustomizations = [
             { id: "p20", name: "Gotas de chocolate", price: 2.50 },
             { id: "p21", name: "Bis preto", price: 3.00 },
             { id: "p22", name: "Bis branco", price: 3.00 },
-            { id: "p23", name: "Ovomaltine", price: 3.50 }
+            { id: "p23", name: "Ovomaltine", price: 3.00 },
+            { id: "p24", name: "Diamante negro", price: 4.00 },
+            { id: "p25", name: "Creme de leite Ninho", price: 6.50 },
+            { id: "p26", name: "Nutella", price: 7.50 },
+            { id: "p27", name: "Chantily", price: 5.00 }
         ]
     }
 ];

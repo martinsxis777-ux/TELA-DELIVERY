@@ -8,11 +8,13 @@ export default function ProductModal({ product, isOpen, onClose, onAdd }) {
     // Estado guarda as seleções de cada grupo de customização
     // ex: { "base": { "b1": {item, qtd: 1} }, "free_addons": {...} }
     const [selections, setSelections] = useState({});
+    const [observation, setObservation] = useState('');
 
     // Reset se trocar de produto
     useEffect(() => {
         if (isOpen) {
             setSelections({});
+            setObservation('');
         }
     }, [isOpen, product]);
 
@@ -99,11 +101,12 @@ export default function ProductModal({ product, isOpen, onClose, onAdd }) {
         const sortedIds = chosenOptions.map(o => o.id).sort().join(',');
         const cartItem = {
             ...product,
-            id: `${product.id}_${sortedIds}`, // UUID mock
+            id: `${product.id}_${sortedIds}_${Date.now()}`, // UUID mock unique for same addons diff obs
             cartId: `${product.id}_${Date.now()}`,
             basePrice: product.price,
             price: finalPrice,
-            customOptions: chosenOptions
+            customOptions: chosenOptions,
+            observation: observation.trim()
         };
 
         onAdd(cartItem);
@@ -222,6 +225,17 @@ export default function ProductModal({ product, isOpen, onClose, onAdd }) {
                             </div>
                         )
                     })}
+
+                    {/* Observações */}
+                    <div className="bg-white p-4 mb-2 shadow-sm">
+                        <h3 className="font-bold text-gray-800 text-base mb-3">Observações?</h3>
+                        <textarea
+                            value={observation}
+                            onChange={(e) => setObservation(e.target.value)}
+                            placeholder="Observações sobre o produto"
+                            className="w-full border rounded-lg p-3 text-sm text-gray-700 outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-shadow resize-none h-24 bg-gray-50 focus:bg-white"
+                        />
+                    </div>
                 </div>
 
                 {/* Rodapé Fixo */}

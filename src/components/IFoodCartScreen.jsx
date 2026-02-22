@@ -102,6 +102,13 @@ export default function IFoodCartScreen() {
                                             </ul>
                                         )}
 
+                                        {/* Exibe Observação se houver */}
+                                        {item.observation && (
+                                            <p className="mt-1.5 text-xs text-gray-500 italic bg-gray-50 p-2 rounded-md border">
+                                                Obs: {item.observation}
+                                            </p>
+                                        )}
+
                                         <p className="font-bold text-gray-900 mt-2 flex justify-between items-center">
                                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
                                         </p>
