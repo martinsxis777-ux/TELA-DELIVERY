@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
+import ProductModal from './ProductModal';
 import { acaiRinoMenu } from '../data/acaiRinoMenu';
+import { useCart } from '../context/CartContext';
 
 export default function MenuScreen() {
     const [activeCategory, setActiveCategory] = useState('1');
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const { addToCart } = useCart();
 
     const categories = acaiRinoMenu.map(c => ({ id: c.id, label: c.title }));
     const activeCategoryData = acaiRinoMenu.find(c => c.id === activeCategory);
@@ -50,10 +54,24 @@ export default function MenuScreen() {
             >
                 {filteredProducts.map(product => (
                     <motion.div key={product.id} variants={item}>
-                        <ProductCard product={product} />
+                        <ProductCard
+                            product={product}
+                            onClick={() => setSelectedProduct(product)}
+                        />
                     </motion.div>
                 ))}
             </motion.div>
+
+            {/* Overlay de Customização (iFood Add-on flow) */}
+            <ProductModal
+                product={selectedProduct}
+                isOpen={!!selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+                onAdd={(itemWithAddons) => {
+                    addToCart(itemWithAddons);
+                    setSelectedProduct(null);
+                }}
+            />
         </div>
     );
 }

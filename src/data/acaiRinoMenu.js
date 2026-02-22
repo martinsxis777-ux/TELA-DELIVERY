@@ -1,5 +1,61 @@
 // Base de dados mockada com as informações raspadas da página do Brendi.
 // As imagens e preços são ilustrativos/placeholders para você editar depois no código.
+
+const baseCustomizations = [
+    {
+        id: "base",
+        title: "Escolha Açai ou Sorvete",
+        subtitle: "Escolha de 1 a 2",
+        min: 1,
+        max: 2,
+        options: [
+            { id: "b1", name: "Açai", price: 0 },
+            { id: "b2", name: "Cupuaçu", price: 0 },
+            { id: "b3", name: "Café Trufado", price: 0 },
+            { id: "b4", name: "Sorvete Ninho Trufado", price: 0 },
+            { id: "b5", name: "Sorvete Creme de Nutella", price: 0 },
+            { id: "b6", name: "Sorvete Chocolate Trufado", price: 0 },
+            { id: "b7", name: "Sorvete Creme", price: 0 },
+            { id: "b8", name: "Sorvete Torta de Limão", price: 0 },
+            { id: "b9", name: "Sorvete Iogurt com Amarena", price: 0 },
+            { id: "b10", name: "Marshmallow", price: 0 },
+        ]
+    },
+    {
+        id: "free_addons",
+        title: "Escolha 4 adicionais",
+        subtitle: "Escolha de 1 a 4",
+        min: 1,
+        max: 4,
+        options: [
+            { id: "a1", name: "Leite condensado", price: 0 },
+            { id: "a2", name: "Leite em pó", price: 0 },
+            { id: "a3", name: "Granola", price: 0 },
+            { id: "a4", name: "Banana", price: 0 },
+            { id: "a5", name: "Morango", price: 0 },
+            { id: "a6", name: "Kiwi", price: 0 },
+            { id: "a7", name: "Uva", price: 0 },
+            { id: "a8", name: "Abacaxi", price: 0 },
+        ]
+    },
+    {
+        id: "paid_addons",
+        title: "Turbine seu pedido",
+        subtitle: "Escolha até 10 opções",
+        min: 0,
+        max: 10,
+        options: [
+            { id: "p1", name: "Leite condensado", price: 2.50 },
+            { id: "p2", name: "Leite em pó", price: 2.50 },
+            { id: "p3", name: "Granola", price: 2.50 },
+            { id: "p4", name: "Banana", price: 3.00 },
+            { id: "p5", name: "Morango", price: 6.00 },
+            { id: "p6", name: "Kiwi", price: 4.00 },
+            { id: "p7", name: "Uva", price: 3.50 },
+            { id: "p8", name: "Abacaxi", price: 3.50 },
+        ]
+    }
+];
 export const acaiRinoMenu = [
     {
         id: "1",
@@ -10,14 +66,16 @@ export const acaiRinoMenu = [
                 name: "Combo Perfeito: 2 Copos Iguais 300ml + 4 Adicionais",
                 description: "Os dois copos montados iguais, os 4 adicionais escolhidos vão nos dois copos. Montados em camadas.",
                 price: 35.00,
-                image: "https://images.unsplash.com/photo-1590137703814-ddfb9ffaf421?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1590137703814-ddfb9ffaf421?q=80&w=500&auto=format&fit=crop",
+                customizations: baseCustomizations
             },
             {
                 id: "promo2",
                 name: "Combo Duplo: 2 Copos 300ml + 4 Adicionais (cada)",
                 description: "Dois copos montados separadamente com 4 adicionais cada. Montados em camadas.",
                 price: 38.00,
-                image: "https://images.unsplash.com/photo-1528828574169-dc30e0084ce5?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1528828574169-dc30e0084ce5?q=80&w=500&auto=format&fit=crop",
+                customizations: baseCustomizations
             }
         ]
     },
@@ -30,28 +88,32 @@ export const acaiRinoMenu = [
                 name: "Copo 300ml",
                 description: "Açaí no copo de 300ml já com 4 adicionais à sua escolha. Montado em camadas.",
                 price: 18.00,
-                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop",
+                customizations: baseCustomizations
             },
             {
                 id: "copo400",
                 name: "Copo 400ml",
                 description: "Açaí no copo de 400ml já com 4 adicionais à sua escolha. Montado em camadas.",
                 price: 22.00,
-                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop",
+                customizations: baseCustomizations
             },
             {
                 id: "copo500",
                 name: "Copo 500ml",
                 description: "Açaí no copo de 500ml já com 4 adicionais à sua escolha. Montado em camadas.",
                 price: 26.00,
-                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop",
+                customizations: baseCustomizations
             },
             {
                 id: "copo700",
                 name: "Copo 700ml",
                 description: "Açaí no copo de 700ml já com 4 adicionais à sua escolha. Montado em camadas.",
                 price: 32.00,
-                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1625938146369-adc83368bda2?q=80&w=500&auto=format&fit=crop",
+                customizations: baseCustomizations
             }
         ]
     },
@@ -64,7 +126,12 @@ export const acaiRinoMenu = [
                 name: "Barca 500ml",
                 description: "Barca de açaí de 500ml, escolha até 6 adicionais grátis para deixar sua combinação única.",
                 price: 45.00,
-                image: "https://images.unsplash.com/photo-1590137703814-ddfb9ffaf421?q=80&w=500&auto=format&fit=crop"
+                image: "https://images.unsplash.com/photo-1590137703814-ddfb9ffaf421?q=80&w=500&auto=format&fit=crop",
+                customizations: [
+                    baseCustomizations[0],
+                    { ...baseCustomizations[1], title: "Escolha 6 adicionais", subtitle: "Escolha de 1 a 6", max: 6 },
+                    baseCustomizations[2]
+                ]
             }
         ]
     },

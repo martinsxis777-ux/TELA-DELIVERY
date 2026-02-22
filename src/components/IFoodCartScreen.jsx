@@ -90,7 +90,19 @@ export default function IFoodCartScreen() {
                                 <div className="flex-1 flex flex-col justify-between">
                                     <div>
                                         <h3 className="text-gray-800 font-medium text-sm">{item.name}</h3>
-                                        <p className="font-bold text-gray-900 mt-1 flex justify-between items-center">
+
+                                        {/* Exibe as customizações selecionadas */}
+                                        {item.customOptions && item.customOptions.length > 0 && (
+                                            <ul className="mt-1 text-xs text-gray-500 flex flex-col gap-0.5">
+                                                {item.customOptions.map((opt, idx) => (
+                                                    <li key={idx} className="flex gap-1">
+                                                        <span>•</span> {opt.name} {opt.price > 0 ? `(+ ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(opt.price)})` : ''}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+
+                                        <p className="font-bold text-gray-900 mt-2 flex justify-between items-center">
                                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
                                         </p>
                                     </div>

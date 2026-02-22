@@ -10,7 +10,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background-color: var(--color-red);
+  background-color: #6B21A8;
   color: white;
   align-items: center;
 }

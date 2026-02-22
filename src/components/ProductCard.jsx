@@ -1,9 +1,7 @@
 import { Plus } from 'lucide-react';
-import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 
-export default function ProductCard({ product }) {
-    const { addToCart } = useCart();
+export default function ProductCard({ product, onClick }) {
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex p-4 gap-4 h-36">
@@ -19,7 +17,7 @@ export default function ProductCard({ product }) {
                     <motion.button
                         whileTap={{ scale: 0.8 }}
                         className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center bg-white shadow-sm"
-                        onClick={() => addToCart(product)}
+                        onClick={onClick}
                         aria-label="Adicionar"
                     >
                         <Plus size={18} className="text-[#6B21A8]" />
