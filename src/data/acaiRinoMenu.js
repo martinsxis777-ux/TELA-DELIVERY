@@ -36,6 +36,21 @@ const baseCustomizations = [
             { id: "a6", name: "Kiwi", price: 0 },
             { id: "a7", name: "Uva", price: 0 },
             { id: "a8", name: "Abacaxi", price: 0 },
+            { id: "a9", name: "Manga", price: 0 },
+            { id: "a10", name: "Sonho de Valsa", price: 0 },
+            { id: "a11", name: "Ouro Branco", price: 0 },
+            { id: "a12", name: "Mel", price: 0 },
+            { id: "a13", name: "Sucrilhos", price: 0 },
+            { id: "a14", name: "Amendoim", price: 0 },
+            { id: "a15", name: "Doce de leite", price: 0 },
+            { id: "a16", name: "Paçoca", price: 0 },
+            { id: "a17", name: "Negresco", price: 0 },
+            { id: "a18", name: "Chocoball", price: 0 },
+            { id: "a19", name: "Confetes", price: 0 },
+            { id: "a20", name: "Gotas de chocolate", price: 0 },
+            { id: "a21", name: "Bis preto", price: 0 },
+            { id: "a22", name: "Bis branco", price: 0 },
+            { id: "a23", name: "Ovomaltine", price: 0 }
         ]
     },
     {
@@ -53,6 +68,21 @@ const baseCustomizations = [
             { id: "p6", name: "Kiwi", price: 4.00 },
             { id: "p7", name: "Uva", price: 3.50 },
             { id: "p8", name: "Abacaxi", price: 3.50 },
+            { id: "p9", name: "Manga", price: 3.00 },
+            { id: "p10", name: "Sonho de Valsa", price: 2.50 },
+            { id: "p11", name: "Ouro Branco", price: 2.50 },
+            { id: "p12", name: "Mel", price: 2.00 },
+            { id: "p13", name: "Sucrilhos", price: 2.00 },
+            { id: "p14", name: "Amendoim", price: 2.00 },
+            { id: "p15", name: "Doce de leite", price: 3.50 },
+            { id: "p16", name: "Paçoca", price: 2.00 },
+            { id: "p17", name: "Negresco", price: 3.00 },
+            { id: "p18", name: "Chocoball", price: 2.00 },
+            { id: "p19", name: "Confetes", price: 2.50 },
+            { id: "p20", name: "Gotas de chocolate", price: 2.50 },
+            { id: "p21", name: "Bis preto", price: 3.00 },
+            { id: "p22", name: "Bis branco", price: 3.00 },
+            { id: "p23", name: "Ovomaltine", price: 3.50 }
         ]
     }
 ];
