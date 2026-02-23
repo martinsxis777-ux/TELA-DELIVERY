@@ -3,7 +3,7 @@ import { db, storage } from '../services/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { acaiRinoMenu } from '../data/acaiRinoMenu';
-import { Pencil, Trash2, Plus, Image as ImageIcon, Save, X } from 'lucide-react';
+import { Pencil, Trash2, Plus, Image as ImageIcon, Save, X, Store } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminMenu() {
