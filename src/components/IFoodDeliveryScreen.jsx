@@ -28,22 +28,39 @@ export default function IFoodDeliveryScreen() {
         const unmaskedVal = val.replace('-', '');
         if (unmaskedVal.length === 8) {
             try {
-                const res = await fetch(`https://viacep.com.br/ws/${unmaskedVal}/json/`);
+                // Tentativa 1: BrasilAPI (Melhor para CORS e Rate Limits)
+                const res = await fetch(`https://brasilapi.com.br/api/cep/v1/${unmaskedVal}`);
+                if (!res.ok) throw new Error('BrasilAPI failed');
                 const data = await res.json();
-                if (!data.erro) {
-                    setAddress({
-                        ...address, // Spread current address instead of prev callback
-                        logradouro: data.logradouro || '',
-                        bairro: data.bairro || '',
-                        localidade: data.localidade || ''
-                    });
-                    toast.success("Endereço encontrado! Faltam apenas os detalhes.", { duration: 4000 });
-                } else {
-                    toast.error("CEP não encontrado", { duration: 2000 });
+
+                setAddress(prev => ({
+                    ...prev,
+                    logradouro: data.street || '',
+                    bairro: data.neighborhood || '',
+                    localidade: data.city || ''
+                }));
+                toast.success("Endereço encontrado! Faltam apenas os detalhes.", { duration: 4000 });
+
+            } catch (errBrasil) {
+                // Tentativa 2: ViaCEP (Fallback)
+                try {
+                    const resVia = await fetch(`https://viacep.com.br/ws/${unmaskedVal}/json/`);
+                    const dataVia = await resVia.json();
+                    if (!dataVia.erro) {
+                        setAddress(prev => ({
+                            ...prev,
+                            logradouro: dataVia.logradouro || '',
+                            bairro: dataVia.bairro || '',
+                            localidade: dataVia.localidade || ''
+                        }));
+                        toast.success("Endereço encontrado! Faltam apenas os detalhes.", { duration: 4000 });
+                    } else {
+                        toast.error("CEP não encontrado", { duration: 2000 });
+                    }
+                } catch (errVia) {
+                    console.error('CEP fetching errors:', errBrasil, errVia);
+                    toast.error("Erro ao buscar CEP. Verifique a conexão.", { duration: 2000 });
                 }
-            } catch (err) {
-                console.error('ViaCEP error:', err);
-                toast.error("Erro ao buscar CEP", { duration: 2000 });
             }
         }
     };
