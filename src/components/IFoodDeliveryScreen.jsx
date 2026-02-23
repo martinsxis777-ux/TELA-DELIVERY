@@ -127,9 +127,9 @@ export default function IFoodDeliveryScreen() {
                             <input
                                 type="text"
                                 placeholder="Rua / Logradouro"
-                                disabled
                                 value={address.logradouro}
-                                className="p-4 border rounded-lg flex-1 bg-gray-100 text-gray-600 outline-none"
+                                onChange={(e) => setAddress({ ...address, logradouro: e.target.value })}
+                                className="p-4 border rounded-lg flex-1 bg-gray-50 text-gray-800 outline-none focus:border-purple-600 focus:bg-white transition-colors"
                             />
                             <input
                                 type="text"
@@ -152,16 +152,16 @@ export default function IFoodDeliveryScreen() {
                             <input
                                 type="text"
                                 placeholder="Bairro"
-                                disabled
                                 value={address.bairro}
-                                className="p-4 border rounded-lg flex-1 bg-gray-100 text-gray-600 outline-none"
+                                onChange={(e) => setAddress({ ...address, bairro: e.target.value })}
+                                className="p-4 border rounded-lg flex-1 bg-gray-50 text-gray-800 outline-none focus:border-purple-600 focus:bg-white transition-colors"
                             />
                             <input
                                 type="text"
                                 placeholder="Cidade"
-                                disabled
                                 value={address.localidade}
-                                className="p-4 border rounded-lg flex-1 bg-gray-100 text-gray-600 outline-none"
+                                onChange={(e) => setAddress({ ...address, localidade: e.target.value })}
+                                className="p-4 border rounded-lg flex-1 bg-gray-50 text-gray-800 outline-none focus:border-purple-600 focus:bg-white transition-colors"
                             />
                         </div>
                     </div>
