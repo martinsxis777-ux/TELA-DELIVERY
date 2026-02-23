@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import CouponSplash from './CouponSplash';
+import StoreFooter from './StoreFooter';
 import { useCart } from '../context/CartContext';
 import { db } from '../services/firebase';
 import { collection, onSnapshot, query } from 'firebase/firestore';
@@ -48,7 +49,7 @@ export default function MenuScreen() {
     };
 
     return (
-        <div className="flex flex-col flex-1 bg-gray-50 pb-32">
+        <div className="flex flex-col flex-1 bg-gray-50">
             <CouponSplash />
 
             <div className="flex gap-3 overflow-x-auto p-4 no-scrollbar border-b bg-white sticky top-0 z-40">
@@ -98,6 +99,8 @@ export default function MenuScreen() {
                     setSelectedProduct(null);
                 }}
             />
+
+            <StoreFooter />
         </div>
     );
 }
