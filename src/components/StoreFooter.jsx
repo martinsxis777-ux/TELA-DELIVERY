@@ -22,14 +22,6 @@ export default function StoreFooter() {
                     </div>
                 </div>
 
-                <div className="flex items-start gap-3 py-3">
-                    <MapPin size={20} className="text-purple-600 shrink-0 mt-0.5" />
-                    <div>
-                        <p className="font-bold text-gray-700 text-sm">Endereço da Loja</p>
-                        <p className="text-gray-500 text-xs mt-0.5 leading-snug">Av. Principal São José do Rio Preto, 1234 - SP</p>
-                    </div>
-                </div>
-
                 <div className="flex items-start gap-3 pt-3">
                     <CreditCard size={20} className="text-purple-600 shrink-0 mt-0.5" />
                     <div className="w-full">
