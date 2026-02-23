@@ -1,17 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
-import { acaiRinoMenu } from '../data/acaiRinoMenu';
 import { useCart } from '../context/CartContext';
+import { db } from '../services/firebase';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 
 export default function MenuScreen() {
-    const [activeCategory, setActiveCategory] = useState('1');
+    const [categoriesDB, setCategoriesDB] = useState([]);
+    const [activeCategory, setActiveCategory] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const { addToCart } = useCart();
 
-    const categories = acaiRinoMenu.map(c => ({ id: c.id, label: c.title }));
-    const activeCategoryData = acaiRinoMenu.find(c => c.id === activeCategory);
+    useEffect(() => {
+        const q = query(collection(db, 'categories'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ fbId: doc.id, ...doc.data() }));
+            // Ordenar se houver IDs numéricos originais
+            data.sort((a, b) => parseInt(a.id || 0) - parseInt(b.id || 0));
+            setCategoriesDB(data);
+
+            // Set initial active category if not set
+            if (data.length > 0) {
+                setActiveCategory(prev => prev ? prev : data[0].fbId);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const categories = categoriesDB.map(c => ({ id: c.fbId, label: c.title }));
+    const activeCategoryData = categoriesDB.find(c => c.fbId === activeCategory);
     const filteredProducts = activeCategoryData ? activeCategoryData.products : [];
 
     const container = {
@@ -46,20 +65,24 @@ export default function MenuScreen() {
             </div>
 
             <motion.div
-                key={activeCategory} // Force re-render animation when category changes
+                key={activeCategory || 'empty'} // Force re-render animation when category changes
                 variants={container}
                 initial="hidden"
                 animate="show"
                 className="flex flex-col gap-3 p-4"
             >
-                {filteredProducts.map(product => (
-                    <motion.div key={product.id} variants={item}>
-                        <ProductCard
-                            product={product}
-                            onClick={() => setSelectedProduct(product)}
-                        />
-                    </motion.div>
-                ))}
+                {categoriesDB.length === 0 ? (
+                    <div className="text-center p-8 text-gray-400 font-medium">Cardápio sendo atualizado...</div>
+                ) : (
+                    filteredProducts?.map(product => (
+                        <motion.div key={product.id} variants={item}>
+                            <ProductCard
+                                product={product}
+                                onClick={() => setSelectedProduct(product)}
+                            />
+                        </motion.div>
+                    ))
+                )}
             </motion.div>
 
             {/* Overlay de Customização (iFood Add-on flow) */}

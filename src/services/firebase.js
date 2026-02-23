@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // A chave que você enviou é uma "Service Account" (usada para Back-end em Node.js/Python).
 // Para o front-end em React, precisamos da configuração web (Web API Key).
@@ -16,3 +17,4 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const storage = getStorage(app);

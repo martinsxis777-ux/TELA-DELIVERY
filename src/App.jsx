@@ -8,6 +8,10 @@ import IFoodDeliveryScreen from './components/IFoodDeliveryScreen';
 import IFoodPaymentScreen from './components/IFoodPaymentScreen';
 import CartSheet from './components/CartSheet';
 import Header from './components/Header';
+import AdminLogin from './components/AdminLogin';
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './components/AdminDashboard';
+import AdminMenu from './components/AdminMenu';
 import './App.css';
 
 // A wrapper to show the header only on the Menu screen and slide transitions
@@ -46,7 +50,17 @@ function App() {
     <BrowserRouter>
       <CartProvider>
         <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', border: 'none' } }} />
-        <AppContent />
+        <Routes>
+          {/* Admin Routes (Full Width, No Header/Cart wrappers) */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="menu" element={<AdminMenu />} />
+          </Route>
+
+          {/* Customer Application (Wrapped with AppContent logic) */}
+          <Route path="*" element={<AppContent />} />
+        </Routes>
       </CartProvider>
     </BrowserRouter>
   );
