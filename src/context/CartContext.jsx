@@ -8,6 +8,14 @@ export function CartProvider({ children }) {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
 
+    // Static available coupons for the R$ 100 welcome splash
+    const availableCoupons = [
+        { code: 'BEMVINDO30', title: '30% OFF', description: 'Até R$ 15 de desconto', type: 'percent', value: 30, maxDiscount: 15 },
+        { code: 'BEMVINDO60', title: '60% OFF', description: 'Até R$ 40  de desconto', type: 'percent', value: 60, maxDiscount: 40 },
+        { code: 'RINO25', title: 'R$ 25 OFF', description: 'Em pedidos acima de R$ 80', type: 'fixed', value: 25, minOrder: 80 },
+        { code: 'RINO20', title: 'R$ 20 OFF', description: 'Em pedidos acima de R$ 60', type: 'fixed', value: 20, minOrder: 60 }
+    ];
+
     const addToCart = (product) => {
         setCartItems(prev => {
             const existingItem = prev.find(item => item.id === product.id);
@@ -41,16 +49,25 @@ export function CartProvider({ children }) {
 
     const applyCoupon = (code) => {
         const c = code.toUpperCase();
-        if (c === 'PRIMEIRA50') {
-            setAppliedCoupon({ code: c, type: 'percent', value: 50 });
-            toast.success("Cupom de 50% aplicado!", { duration: 2000 });
-            return true;
-        } else if (c === 'RINO10' || c === 'RINO20' || c === 'RINO30') {
-            const val = parseInt(c.replace('RINO', ''));
-            setAppliedCoupon({ code: c, type: 'fixed', value: val });
-            toast.success(`Cupom de R$ ${val} aplicado!`, { duration: 2000 });
+        const found = availableCoupons.find(coupon => coupon.code === c);
+
+        if (found) {
+            if (found.minOrder && cartTotal < found.minOrder) {
+                toast.error(`Valor mínimo para este cupom é R$ ${found.minOrder.toFixed(2)}`, { duration: 2000 });
+                return false;
+            }
+            setAppliedCoupon(found);
+            toast.success("Cupom aplicado com sucesso!", { duration: 2000 });
             return true;
         }
+
+        // Keep legacy text coupons working just in case
+        if (c === 'PRIMEIRA50') {
+            setAppliedCoupon({ code: c, type: 'percent', value: 50, maxDiscount: 50 });
+            toast.success("Cupom de 50% aplicado!", { duration: 2000 });
+            return true;
+        }
+
         toast.error("Cupom inválido ou expirado", { duration: 2000 });
         return false;
     };
@@ -63,7 +80,8 @@ export function CartProvider({ children }) {
     let discountAmount = 0;
     if (appliedCoupon) {
         if (appliedCoupon.type === 'percent') {
-            discountAmount = cartTotal * (appliedCoupon.value / 100);
+            const calculated = cartTotal * (appliedCoupon.value / 100);
+            discountAmount = appliedCoupon.maxDiscount ? Math.min(calculated, appliedCoupon.maxDiscount) : calculated;
         } else if (appliedCoupon.type === 'fixed') {
             discountAmount = Math.min(cartTotal, appliedCoupon.value);
         }
@@ -85,7 +103,8 @@ export function CartProvider({ children }) {
             appliedCoupon,
             applyCoupon,
             removeCoupon,
-            discountAmount
+            discountAmount,
+            availableCoupons
         }}>
             {children}
         </CartContext.Provider>

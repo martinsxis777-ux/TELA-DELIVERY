@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
+import CouponSplash from './CouponSplash';
 import { useCart } from '../context/CartContext';
 import { db } from '../services/firebase';
 import { collection, onSnapshot, query } from 'firebase/firestore';
@@ -48,6 +49,8 @@ export default function MenuScreen() {
 
     return (
         <div className="flex flex-col flex-1 bg-gray-50 pb-32">
+            <CouponSplash />
+
             <div className="flex gap-3 overflow-x-auto p-4 no-scrollbar border-b bg-white sticky top-0 z-40">
                 {categories.map(cat => (
                     <motion.button

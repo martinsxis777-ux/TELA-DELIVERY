@@ -8,10 +8,10 @@ export default function IFoodCartScreen() {
     const navigate = useNavigate();
     const {
         cartItems, updateQuantity, removeFromCart, cartTotal, cartCount,
-        appliedCoupon, applyCoupon, removeCoupon, discountAmount
+        appliedCoupon, applyCoupon, removeCoupon, discountAmount, availableCoupons
     } = useCart();
 
-    const [couponCode, setCouponCode] = useState('');
+    const [showCoupons, setShowCoupons] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
     const [guestName, setGuestName] = useState('');
     const [guestPhone, setGuestPhone] = useState('');
@@ -26,11 +26,9 @@ export default function IFoodCartScreen() {
         }
     }, []);
 
-    const handleApply = () => {
-        if (couponCode.trim()) {
-            applyCoupon(couponCode);
-            setCouponCode('');
-        }
+    const handleApply = (code) => {
+        const success = applyCoupon(code);
+        if (success) setShowCoupons(false);
     };
 
     const handleFinish = () => {
@@ -149,21 +147,17 @@ export default function IFoodCartScreen() {
                     <h3 className="font-bold text-gray-800 text-sm mb-3">Cupons e descontos</h3>
                     {!appliedCoupon ? (
                         <div className="flex gap-2">
-                            <div className="relative flex-1">
-                                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Insira o código promocional"
-                                    value={couponCode}
-                                    onChange={(e) => setCouponCode(e.target.value)}
-                                    className="w-full bg-gray-50 border rounded-lg py-2.5 pl-10 pr-3 text-sm focus:border-purple-600 outline-none uppercase"
-                                />
-                            </div>
                             <button
-                                onClick={handleApply}
-                                className="bg-purple-100 text-purple-700 font-bold px-4 rounded-lg text-sm"
+                                onClick={() => setShowCoupons(true)}
+                                className="w-full flex items-center justify-between border rounded-lg py-3 px-4 hover:border-purple-600 transition-colors bg-white group"
                             >
-                                Resgatar
+                                <div className="flex items-center gap-2">
+                                    <Tag className="text-gray-400 group-hover:text-purple-600 transition-colors" size={20} />
+                                    <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Selecione um cupom</span>
+                                </div>
+                                <div className="bg-purple-50 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">
+                                    {availableCoupons.length} disponíveis
+                                </div>
                             </button>
                         </div>
                     ) : (
@@ -269,6 +263,64 @@ export default function IFoodCartScreen() {
                             >
                                 Cancelar
                             </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+
+                {/* Modal de Cupons (Bottom Sheet) */}
+                {showCoupons && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 z-[100] flex justify-center items-end"
+                        onClick={() => setShowCoupons(false)}
+                    >
+                        <motion.div
+                            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            className="bg-white w-full max-w-md rounded-t-3xl flex flex-col max-h-[85vh] overflow-hidden"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+                                <h2 className="text-lg font-bold text-gray-900">Meus Cupons</h2>
+                                <button onClick={() => setShowCoupons(false)} className="text-gray-400 hover:text-gray-600 p-1">
+                                    <CheckCircle2 size={24} className="opacity-0 hidden" /> {/* Espaçador para flex-between */}
+                                    <ArrowLeft onClick={() => setShowCoupons(false)} size={24} className="rotate-180" />
+                                </button>
+                            </div>
+
+                            <div className="p-4 overflow-y-auto bg-gray-50 flex-1 flex flex-col gap-3">
+                                {availableCoupons.map((coupon, idx) => {
+                                    const canUse = !coupon.minOrder || cartTotal >= coupon.minOrder;
+
+                                    return (
+                                        <div
+                                            key={idx}
+                                            onClick={() => canUse && handleApply(coupon.code)}
+                                            className={`bg-white rounded-xl p-4 border flex gap-4 transition-colors ${canUse ? 'cursor-pointer hover:border-purple-300 shadow-sm' : 'opacity-60 grayscale cursor-not-allowed'}`}
+                                        >
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${canUse ? 'bg-[#FFEB3B] text-black' : 'bg-gray-200 text-gray-500'}`}>
+                                                <Tag size={20} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-gray-900 text-base">{coupon.title}</h3>
+                                                <p className="text-sm text-gray-500 line-clamp-2 leading-snug mt-0.5">{coupon.description}</p>
+
+                                                {!canUse && (
+                                                    <p className="text-xs text-red-500 font-bold mt-1.5 flex items-center gap-1">
+                                                        Faltam {(coupon.minOrder - cartTotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                    </p>
+                                                )}
+
+                                                {canUse && (
+                                                    <p className="text-[10px] text-green-600 font-bold mt-2 uppercase tracking-wide">
+                                                        Toque para aplicar
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}
