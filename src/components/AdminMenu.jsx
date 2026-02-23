@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { db, storage } from '../services/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { acaiRinoMenu } from '../data/acaiRinoMenu';
+import { acaiRinoMenu, baseCustomizations } from '../data/acaiRinoMenu';
 import { Pencil, Trash2, Plus, Image as ImageIcon, Save, X, Store } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -16,7 +16,7 @@ export default function AdminMenu() {
 
     // Form states
     const [catName, setCatName] = useState('');
-    const [prodData, setProdData] = useState({ name: '', description: '', price: 0, image: '' });
+    const [prodData, setProdData] = useState({ name: '', description: '', price: 0, image: '', customizations: [] });
     const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
 
@@ -143,7 +143,8 @@ export default function AdminMenu() {
                         name: prodData.name,
                         description: prodData.description,
                         price: parseFloat(prodData.price),
-                        image: prodData.image
+                        image: prodData.image,
+                        customizations: prodData.customizations || []
                     };
                 }
             }
@@ -242,7 +243,13 @@ export default function AdminMenu() {
                                     <button
                                         onClick={() => {
                                             setEditingProduct({ catFbId: cat.fbId, prodId: prod.id, isNew: false });
-                                            setProdData({ name: prod.name, description: prod.description, price: prod.price, image: prod.image });
+                                            setProdData({
+                                                name: prod.name,
+                                                description: prod.description,
+                                                price: prod.price,
+                                                image: prod.image || '',
+                                                customizations: prod.customizations || []
+                                            });
                                         }}
                                         className="p-2 text-gray-400 hover:text-[#6B21A8] hover:bg-purple-50 rounded-lg transition-colors"
                                     >
@@ -259,7 +266,7 @@ export default function AdminMenu() {
                         ))}
 
                         <button
-                            onClick={() => { setEditingProduct({ catFbId: cat.fbId, isNew: true }); setProdData({ name: '', description: '', price: 0, image: '' }); }}
+                            onClick={() => { setEditingProduct({ catFbId: cat.fbId, isNew: true }); setProdData({ name: '', description: '', price: 0, image: '', customizations: [] }); }}
                             className="mt-2 text-sm text-gray-500 font-bold border-2 border-dashed rounded-xl p-3 flex items-center justify-center gap-2 hover:bg-gray-50 hover:text-[#6B21A8] hover:border-purple-200 transition-colors"
                         >
                             <Plus size={16} /> Adicionar Produto em {cat.title}
@@ -368,6 +375,140 @@ export default function AdminMenu() {
                                     rows="3"
                                     className="w-full border rounded-lg p-3 outline-none focus:border-purple-600 focus:bg-gray-50 resize-none"
                                 />
+                            </div>
+
+                            {/* Adicionais & Customizações */}
+                            <div className="border-t border-gray-100 pt-4 mt-2">
+                                <label className="text-xs font-bold text-gray-800 mb-3 block">Adicionais e Customizações</label>
+
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <button
+                                        onClick={() => {
+                                            const template = baseCustomizations.find(c => c.id === 'base');
+                                            if (template) setProdData(p => ({ ...p, customizations: [...(p.customizations || []), JSON.parse(JSON.stringify(template))] }));
+                                        }}
+                                        className="text-[10px] bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg font-bold border border-blue-100 hover:bg-blue-100 transition-colors"
+                                    >
+                                        + Base (Açai/Sorvete)
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const template = baseCustomizations.find(c => c.id === 'free_addons');
+                                            if (template) setProdData(p => ({ ...p, customizations: [...(p.customizations || []), JSON.parse(JSON.stringify({ ...template, max: 4 }))] }));
+                                        }}
+                                        className="text-[10px] bg-green-50 text-green-700 px-3 py-1.5 rounded-lg font-bold border border-green-100 hover:bg-green-100 transition-colors"
+                                    >
+                                        + Adicionais Padrão (Grátis)
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const template = baseCustomizations.find(c => c.id === 'paid_addons');
+                                            if (template) setProdData(p => ({ ...p, customizations: [...(p.customizations || []), JSON.parse(JSON.stringify(template))] }));
+                                        }}
+                                        className="text-[10px] bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg font-bold border border-purple-100 hover:bg-purple-100 transition-colors"
+                                    >
+                                        + Turbinadas (Pagos)
+                                    </button>
+                                </div>
+
+                                {prodData.customizations?.length > 0 && (
+                                    <div className="flex flex-col gap-3">
+                                        {prodData.customizations.map((cust, cIdx) => (
+                                            <div key={cIdx} className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <input
+                                                        type="text"
+                                                        value={cust.title}
+                                                        onChange={e => {
+                                                            const newCust = [...prodData.customizations];
+                                                            newCust[cIdx].title = e.target.value;
+                                                            setProdData(p => ({ ...p, customizations: newCust }));
+                                                        }}
+                                                        className="font-bold text-sm text-gray-800 bg-transparent border-b border-gray-300 outline-none w-2/3 pb-1"
+                                                    />
+                                                    <button
+                                                        onClick={() => {
+                                                            const newCust = [...prodData.customizations];
+                                                            newCust.splice(cIdx, 1);
+                                                            setProdData(p => ({ ...p, customizations: newCust }));
+                                                        }}
+                                                        className="text-red-500 p-1 hover:bg-red-50 rounded"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex gap-2 mb-3">
+                                                    <div className="text-[10px] text-gray-500">Mín:
+                                                        <input type="number" value={cust.min} onChange={e => {
+                                                            const newCust = [...prodData.customizations];
+                                                            newCust[cIdx].min = parseInt(e.target.value) || 0;
+                                                            setProdData(p => ({ ...p, customizations: newCust }));
+                                                        }} className="w-10 border rounded ml-1 px-1 py-0.5" />
+                                                    </div>
+                                                    <div className="text-[10px] text-gray-500">Máx:
+                                                        <input type="number" value={cust.max} onChange={e => {
+                                                            const newCust = [...prodData.customizations];
+                                                            newCust[cIdx].max = parseInt(e.target.value) || 0;
+                                                            setProdData(p => ({ ...p, customizations: newCust }));
+                                                        }} className="w-10 border rounded ml-1 px-1 py-0.5" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1 no-scrollbar">
+                                                    {cust.options?.map((opt, oIdx) => (
+                                                        <div key={oIdx} className="flex items-center gap-2 bg-white border rounded-lg p-1.5">
+                                                            <input
+                                                                type="text"
+                                                                value={opt.name}
+                                                                onChange={e => {
+                                                                    const newCust = [...prodData.customizations];
+                                                                    newCust[cIdx].options[oIdx].name = e.target.value;
+                                                                    setProdData(p => ({ ...p, customizations: newCust }));
+                                                                }}
+                                                                placeholder="Nome do Item"
+                                                                className="flex-1 text-xs border-none outline-none font-medium text-gray-700"
+                                                            />
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={opt.price}
+                                                                onChange={e => {
+                                                                    const newCust = [...prodData.customizations];
+                                                                    newCust[cIdx].options[oIdx].price = parseFloat(e.target.value) || 0;
+                                                                    setProdData(p => ({ ...p, customizations: newCust }));
+                                                                }}
+                                                                placeholder="R$ 0,00"
+                                                                className="w-16 text-[11px] font-bold text-green-600 border-none outline-none text-right bg-gray-50 rounded px-1"
+                                                            />
+                                                            <button
+                                                                onClick={() => {
+                                                                    const newCust = [...prodData.customizations];
+                                                                    newCust[cIdx].options.splice(oIdx, 1);
+                                                                    setProdData(p => ({ ...p, customizations: newCust }));
+                                                                }}
+                                                                className="text-gray-400 hover:text-red-500 transition-colors ml-1"
+                                                            >
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const newCust = [...prodData.customizations];
+                                                        if (!newCust[cIdx].options) newCust[cIdx].options = [];
+                                                        newCust[cIdx].options.push({ id: `new_${Date.now()}`, name: 'Novo Item', price: 0 });
+                                                        setProdData(p => ({ ...p, customizations: newCust }));
+                                                    }}
+                                                    className="w-full mt-2 text-[10px] text-[#6B21A8] font-bold py-1.5 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                                                >
+                                                    + Criar Item Vazio
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

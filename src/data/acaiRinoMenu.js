@@ -1,7 +1,7 @@
 // Base de dados mockada com as informações raspadas da página do Brendi.
 // As imagens e preços são ilustrativos/placeholders para você editar depois no código.
 
-const baseCustomizations = [
+export const baseCustomizations = [
     {
         id: "base",
         title: "Escolha Açai ou Sorvete",
