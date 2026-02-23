@@ -1,8 +1,30 @@
 import { ArrowLeft, Instagram, Info, MapPin, Star, Bike, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import logoImg from '../assets/logo.png';
 
 export default function Header({ onViewChange, currentView }) {
+    const [userLocation, setUserLocation] = useState('Buscando localização...');
+    const [distance, setDistance] = useState('1,6km');
+
+    useEffect(() => {
+        // Fetch approximate location based on IP (No permission required, fast)
+        fetch('https://get.geojs.io/v1/ip/geo.json')
+            .then(res => res.json())
+            .then(data => {
+                if (data.city && data.region) {
+                    // Mapping some states to abbreviations if needed, or just use what comes back. Data.region usually comes as full name in some APIs, let's keep it simple.
+                    setUserLocation(`${data.city} - ${data.region}`);
+                    // Simulate a random distance between 0.5km and 8.5km to make it look realistic for the demo
+                    setDistance(`${(Math.random() * 8 + 0.5).toFixed(1).replace('.', ',')}km`);
+                } else {
+                    setUserLocation('São José do Rio Preto - SP'); // Fallback
+                }
+            })
+            .catch(() => {
+                setUserLocation('São José do Rio Preto - SP'); // Fallback on error
+            });
+    }, []);
     return (
         <div className="bg-gray-50 flex flex-col mb-2 relative">
             {/* Capa / Background Superior (Pode ser uma cor sólida roxa ou uma imagem de açaí) */}
@@ -54,9 +76,9 @@ export default function Header({ onViewChange, currentView }) {
                     </div>
 
                     {/* Linha 2: Localização */}
-                    <div className="flex items-center justify-center gap-1.5">
-                        <MapPin size={16} className="text-gray-400" />
-                        <span>São José do Rio Preto - SP <span className="text-gray-400">•</span> <span className="text-blue-600 underline decoration-blue-300 underline-offset-2">1,6km de você</span></span>
+                    <div className="flex items-center justify-center gap-1.5 line-clamp-1">
+                        <MapPin size={16} className="text-gray-400 shrink-0" />
+                        <span className="truncate">{userLocation} <span className="text-gray-400">•</span> <span className="text-blue-600 underline decoration-blue-300 underline-offset-2 shrink-0">{distance} de você</span></span>
                     </div>
 
                     {/* Linha 3: Avaliação */}
