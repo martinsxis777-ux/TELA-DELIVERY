@@ -39,7 +39,7 @@ export default function StoreFooter() {
                 <ShieldCheck size={28} className="text-gray-300" />
                 <p className="text-[11px] text-gray-400 font-medium">
                     Plataforma segura e selo de qualidade Açai Rino.<br />
-                    CNPJ: 00.000.000/0001-00
+                    CNPJ: 46.196.439/0001-32
                 </p>
             </div>
 
