@@ -35,7 +35,7 @@ export default function IFoodPaymentScreen() {
         setCcData(p => ({ ...p, cpf: v.substring(0, 14) }));
     };
 
-    const deliveryFee = deliveryData.method === 'delivery' ? 6.00 : 0;
+    const deliveryFee = deliveryData.method === 'delivery' ? (cartTotal >= 60 ? 0 : 8.00) : 0;
     const total = cartTotal - discountAmount + deliveryFee;
 
     const handleFinishPayment = async () => {

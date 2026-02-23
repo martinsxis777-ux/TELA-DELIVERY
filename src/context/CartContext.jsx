@@ -11,7 +11,7 @@ export function CartProvider({ children }) {
     // Static available coupons for the R$ 100 welcome splash
     const availableCoupons = [
         { code: 'BEMVINDO30', title: '30% OFF', description: 'Até R$ 15 de desconto', type: 'percent', value: 30, maxDiscount: 15 },
-        { code: 'BEMVINDO60', title: '60% OFF', description: 'Até R$ 40  de desconto', type: 'percent', value: 60, maxDiscount: 40 },
+        { code: 'BEMVINDO60', title: '60% OFF', description: 'Até R$ 90 de desconto, min. R$ 150', type: 'percent', value: 60, maxDiscount: 90, minOrder: 150 },
         { code: 'RINO25', title: 'R$ 25 OFF', description: 'Em pedidos acima de R$ 80', type: 'fixed', value: 25, minOrder: 80 },
         { code: 'RINO20', title: 'R$ 20 OFF', description: 'Em pedidos acima de R$ 60', type: 'fixed', value: 20, minOrder: 60 }
     ];

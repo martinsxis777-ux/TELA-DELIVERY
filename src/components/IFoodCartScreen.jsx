@@ -134,10 +134,10 @@ export default function IFoodCartScreen() {
                 )}
             </div>
 
-            {/* Info Taxa de Entrega (Regra R$ 25) */}
-            {cartTotal < 25 && cartCount > 0 && (
+            {/* Info Taxa de Entrega (Regra R$ 60) */}
+            {cartTotal < 60 && cartCount > 0 && (
                 <div className="bg-gray-100 p-4 text-center">
-                    <p className="text-xs text-gray-500 font-medium">Taxa de entrega grátis acima de R$ 25</p>
+                    <p className="text-xs text-gray-500 font-medium">Faltam {(60 - cartTotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} para Entrega Grátis!</p>
                 </div>
             )}
 
