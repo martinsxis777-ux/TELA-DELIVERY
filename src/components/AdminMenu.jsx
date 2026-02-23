@@ -305,24 +305,24 @@ export default function AdminMenu() {
 
                         <div className="flex flex-col gap-4">
                             {/* Image Upload Area */}
-                            <div className="flex flex-col items-center gap-3">
+                            <div className="flex flex-col items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100 mb-2">
                                 {prodData.image ? (
                                     <div className="relative group">
-                                        <img src={prodData.image} alt="Preview" className="w-32 h-32 object-cover rounded-xl border bg-gray-50" />
+                                        <img src={prodData.image} alt="Preview" className="w-32 h-32 object-cover rounded-xl border bg-white shadow-sm" />
                                         <button
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="absolute inset-0 bg-black/50 text-white font-bold rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute inset-0 bg-black/60 text-white font-bold rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                                         >
-                                            Trocar
+                                            Novo Upload
                                         </button>
                                     </div>
                                 ) : (
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="w-32 h-32 border-2 border-dashed rounded-xl flex flex-col justify-center items-center text-gray-400 hover:text-purple-600 hover:border-purple-300 hover:bg-purple-50 transition-colors"
+                                        className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col justify-center items-center text-gray-400 hover:text-purple-600 hover:border-purple-300 hover:bg-purple-100 transition-colors bg-white shadow-sm"
                                     >
                                         <ImageIcon size={32} className="mb-2" />
-                                        <span className="text-xs font-bold px-2 text-center">Enviar Foto</span>
+                                        <span className="text-xs font-bold px-2 text-center text-gray-500">Enviar Foto</span>
                                     </button>
                                 )}
                                 <input
@@ -332,6 +332,17 @@ export default function AdminMenu() {
                                     accept="image/*"
                                     className="hidden"
                                 />
+
+                                <div className="w-full mt-2">
+                                    <p className="text-[10px] text-gray-400 font-bold mb-1 text-center">OU COLE O LINK DA IMAGEM:</p>
+                                    <input
+                                        type="text"
+                                        placeholder="https://sua-imagem.com/foto.jpg"
+                                        value={prodData.image}
+                                        onChange={e => setProdData({ ...prodData, image: e.target.value })}
+                                        className="w-full border rounded-lg p-3 text-sm outline-none focus:border-purple-600 focus:bg-white bg-white"
+                                    />
+                                </div>
                             </div>
 
                             <div>
