@@ -25,21 +25,25 @@ export default function IFoodDeliveryScreen() {
         setCep(val);
 
         // Call ViaCEP when 8 digits are typed
-        if (val.replace('-', '').length === 8) {
+        const unmaskedVal = val.replace('-', '');
+        if (unmaskedVal.length === 8) {
             try {
-                const res = await fetch(`https://viacep.com.br/ws/${val.replace('-', '')}/json/`);
+                const res = await fetch(`https://viacep.com.br/ws/${unmaskedVal}/json/`);
                 const data = await res.json();
                 if (!data.erro) {
-                    setAddress(prev => ({
-                        ...prev,
-                        logradouro: data.logradouro,
-                        bairro: data.bairro,
-                        localidade: data.localidade
-                    }));
-                    toast.success("Estamos a 4,3 KM de você !! Entrega Rápida", { duration: 4000 });
+                    setAddress({
+                        ...address, // Spread current address instead of prev callback
+                        logradouro: data.logradouro || '',
+                        bairro: data.bairro || '',
+                        localidade: data.localidade || ''
+                    });
+                    toast.success("Endereço encontrado! Faltam apenas os detalhes.", { duration: 4000 });
+                } else {
+                    toast.error("CEP não encontrado", { duration: 2000 });
                 }
             } catch (err) {
                 console.error('ViaCEP error:', err);
+                toast.error("Erro ao buscar CEP", { duration: 2000 });
             }
         }
     };
